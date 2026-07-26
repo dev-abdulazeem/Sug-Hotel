@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.sug.name.ng/sitemap.xml
+Sitemap: https://www.sug.name.ng/image-sitemap.xml
