@@ -1,0 +1,217 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  phone         String?
+  role          UserRole  @default(GUEST)
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bookings      Booking[]
+  reviews       Review[]
+  tableReservations TableReservation[]
+
+  @@map("users")
+}
+
+model Room {
+  id            String      @id @default(uuid())
+  name          String
+  description   String
+  type          RoomType
+  pricePerNight Decimal     @db.Decimal(10, 2)
+  capacity      Int
+  size          Int?
+  bedType       String
+  amenities     String[]
+  images        String[]
+  isAvailable   Boolean     @default(true)
+  featured      Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  bookings      Booking[]
+  reviews       Review[]
+
+  @@map("rooms")
+}
+
+model Booking {
+  id              String        @id @default(uuid())
+  userId          String
+  roomId          String
+  checkIn         DateTime
+  checkOut        DateTime
+  guests          Int
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  nights          Int
+  status          BookingStatus @default(PENDING)
+  paymentStatus   PaymentStatus @default(UNPAID)
+  paymentRef      String?
+  specialRequests String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id])
+  room            Room          @relation(fields: [roomId], references: [id])
+
+  @@map("bookings")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  roomId    String
+  rating    Int      @db.SmallInt
+  comment   String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  room      Room     @relation(fields: [roomId], references: [id])
+
+  @@map("reviews")
+}
+
+model HeroImage {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  title     String?
+  subtitle  String?
+  isActive  Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("hero_images")
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+model Restaurant {
+  id          String    @id @default(uuid())
+  name        String
+  type        String    // Fine Dining, Asian Fusion, etc.
+  description String
+  image       String    // Cloudinary URL
+  hours       String
+  location    String
+  phone       String
+  rating      Float     @default(4.5)
+  specialties String[]
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  reservations TableReservation[]
+
+  @@map("restaurants")
+}
+
+model TableReservation {
+  id            String    @id @default(uuid())
+  restaurantId  String
+  userId        String?  
+  name          String
+  email         String
+  phone         String
+  date          DateTime
+  time          String
+  guests        Int
+  status        ReservationStatus @default(PENDING)
+  specialRequests String?
+  createdAt     DateTime  @default(now())
+
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@map("table_reservations")
+}
+
+model GalleryAlbum {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  coverImage  String    // Cloudinary URL
+  isActive    Boolean   @default(true)
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  photos      GalleryPhoto[]
+
+  @@map("gallery_albums")
+}
+
+model GalleryPhoto {
+  id        String   @id @default(uuid())
+  albumId   String
+  imageUrl  String   // Cloudinary URL
+  caption   String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  album     GalleryAlbum @relation(fields: [albumId], references: [id], onDelete: Cascade)
+
+  @@map("gallery_photos")
+}
+
+enum UserRole {
+  GUEST
+  RECEPTIONIST
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum RoomType {
+  STANDARD
+  DELUXE
+  PREMIUM
+  EXECUTIVE
+  SUITE
+  PENTHOUSE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
