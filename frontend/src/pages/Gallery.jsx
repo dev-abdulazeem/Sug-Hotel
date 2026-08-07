@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
-import { X, ZoomIn, Loader2, Image as ImageIcon } from 'lucide-react';
+import { X, ZoomIn, Loader2, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import api from '../utils/api';
 
 export default function Gallery() {
@@ -199,8 +198,6 @@ export default function Gallery() {
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 }

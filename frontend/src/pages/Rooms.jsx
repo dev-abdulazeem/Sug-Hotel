@@ -3,7 +3,6 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Calendar, Users, ArrowRight, Filter, BedDouble, Wifi } from 'lucide-react';
 import { useRoomStore } from '../store/roomStore';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 export default function Rooms() {
   const [urlParams] = useSearchParams();
@@ -200,7 +199,7 @@ export default function Rooms() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                   {!room.isAvailableForDates && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                       <span className="bg-red-500 text-white text-xs font-semibold px-4 py-1.5 rounded-full">
                         Not Available
                       </span>
@@ -283,8 +282,6 @@ export default function Rooms() {
           </div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
 }

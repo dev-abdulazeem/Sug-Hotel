@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from 'lucide-react';
 import api from '../utils/api';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
 
 export default function Contact() {
@@ -188,8 +187,6 @@ export default function Contact() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

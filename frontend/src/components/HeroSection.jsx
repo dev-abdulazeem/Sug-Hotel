@@ -1,5 +1,5 @@
 import { useEffect, useCallback } from 'react';
-import { ArrowRight, Calendar, Users } from 'lucide-react';
+import { ArrowRight, Calendar, Users, Search } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import { useRoomStore } from '../store/roomStore';
@@ -66,63 +66,64 @@ export default function HeroSection({ searchParams, setSearchParams }) {
         </Link>
       </div>
 
-      {/* ─── Glassmorphism Booking Bar ─── */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 px-4 sm:px-6 lg:px-8 pb-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 sm:p-6 shadow-2xl shadow-black/20">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* ─── Solid Booking Bar ─── */}
+      <div className="absolute bottom-0 left-0 right-0 z-20">
+        <div className="bg-white border-t border-gray-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="flex flex-col lg:flex-row items-end gap-4 lg:gap-6">
+              
               {/* Check-in */}
-              <div>
-                <label className="block text-[11px] text-white/50 uppercase tracking-wide mb-1.5 font-medium">
+              <div className="flex-1 w-full">
+                <label className="block text-[11px] text-gray-400 uppercase tracking-wide mb-2 font-semibold">
                   Check-in
                 </label>
-                <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 hover:bg-white/15 hover:border-white/30 transition-all duration-200">
-                  <Calendar size={15} className="text-gold shrink-0" />
+                <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 hover:border-gold/50 hover:bg-white transition-all duration-200 group">
+                  <Calendar size={18} className="text-gold shrink-0" />
                   <input
                     type="date"
                     value={searchParams.checkIn}
                     onChange={(e) =>
                       setSearchParams({ ...searchParams, checkIn: e.target.value })
                     }
-                    className="w-full text-sm text-white outline-none bg-transparent placeholder:text-white/30"
+                    className="w-full text-sm text-gray-800 outline-none bg-transparent placeholder:text-gray-400 font-medium"
                   />
                 </div>
               </div>
 
               {/* Check-out */}
-              <div>
-                <label className="block text-[11px] text-white/50 uppercase tracking-wide mb-1.5 font-medium">
+              <div className="flex-1 w-full">
+                <label className="block text-[11px] text-gray-400 uppercase tracking-wide mb-2 font-semibold">
                   Check-out
                 </label>
-                <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 hover:bg-white/15 hover:border-white/30 transition-all duration-200">
-                  <Calendar size={15} className="text-gold shrink-0" />
+                <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 hover:border-gold/50 hover:bg-white transition-all duration-200 group">
+                  <Calendar size={18} className="text-gold shrink-0" />
                   <input
                     type="date"
                     value={searchParams.checkOut}
                     onChange={(e) =>
                       setSearchParams({ ...searchParams, checkOut: e.target.value })
                     }
-                    className="w-full text-sm text-white outline-none bg-transparent placeholder:text-white/30"
+                    className="w-full text-sm text-gray-800 outline-none bg-transparent placeholder:text-gray-400 font-medium"
                   />
                 </div>
               </div>
 
               {/* Guests */}
-              <div>
-                <label className="block text-[11px] text-white/50 uppercase tracking-wide mb-1.5 font-medium">
+              <div className="flex-1 w-full">
+                <label className="block text-[11px] text-gray-400 uppercase tracking-wide mb-2 font-semibold">
                   Guests
                 </label>
-                <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 hover:bg-white/15 hover:border-white/30 transition-all duration-200">
-                  <Users size={15} className="text-gold shrink-0" />
+                <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 hover:border-gold/50 hover:bg-white transition-all duration-200 group">
+                  <Users size={18} className="text-gold shrink-0" />
                   <select
                     value={searchParams.guests}
                     onChange={(e) =>
                       setSearchParams({ ...searchParams, guests: e.target.value })
                     }
-                    className="w-full text-sm text-white outline-none bg-transparent appearance-none cursor-pointer"
+                    className="w-full text-sm text-gray-800 outline-none bg-transparent appearance-none cursor-pointer font-medium"
                   >
                     {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <option key={n} value={n} className="text-gray-800">
+                      <option key={n} value={n}>
                         {n} Guest{n > 1 ? 's' : ''}
                       </option>
                     ))}
@@ -131,15 +132,16 @@ export default function HeroSection({ searchParams, setSearchParams }) {
               </div>
 
               {/* Search Button */}
-              <div className="flex items-end">
+              <div className="w-full lg:w-auto">
                 <Link
                   to={`/rooms?checkIn=${searchParams.checkIn}&checkOut=${searchParams.checkOut}&guests=${searchParams.guests}`}
-                  className="w-full bg-gold hover:bg-gold-light text-white text-sm py-3 px-4 rounded-xl text-center transition-all duration-200 flex items-center justify-center gap-2 font-medium shadow-lg shadow-gold/25 hover:shadow-gold/40 hover:-translate-y-0.5"
+                  className="w-full lg:w-auto bg-gold hover:bg-gold-light text-white text-sm py-3.5 px-8 rounded-xl text-center transition-all duration-200 flex items-center justify-center gap-2 font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap"
                 >
+                  <Search size={16} />
                   <span>Check Availability</span>
-                  <ArrowRight size={14} />
                 </Link>
               </div>
+
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User, Phone, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, Phone, Loader2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -174,7 +174,7 @@ export default function Register() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gold hover:bg-gold-light disabled:bg-gray-300 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-gold hover:bg-gold-light disabled:bg-gray-300 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -182,7 +182,10 @@ export default function Register() {
                   <span>Creating account...</span>
                 </>
               ) : (
-                <span>Create Account</span>
+                <>
+                  <span>Create Account</span>
+                  <ArrowRight size={16} />
+                </>
               )}
             </button>
           </form>

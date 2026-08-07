@@ -19,7 +19,6 @@ import { useRoomStore } from '../store/roomStore';
 import { useAuthStore } from '../store/authStore';
 import { useBookingStore } from '../store/bookingStore';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
 
 const amenityIcons = {
@@ -304,8 +303,6 @@ export default function RoomDetail() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

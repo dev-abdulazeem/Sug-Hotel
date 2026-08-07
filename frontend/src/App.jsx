@@ -19,6 +19,7 @@ import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import PaymentVerify from './pages/PaymentVerify';
+import Cancellation from './pages/cancellation';
 
 // Admin Pages
 import AdminLayout from './pages/admin/AdminLayout';
@@ -112,6 +113,7 @@ function App() {
         <Route path="/privacy" element={<UserRoute><Privacy /></UserRoute>} />
         <Route path="/terms" element={<UserRoute><Terms /></UserRoute>} />
         <Route path="/payment/verify" element={<UserRoute><PaymentVerify /></UserRoute>} />
+        <Route path="/cancellation" element={<UserRoute><Cancellation /></UserRoute>} />
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />

@@ -1,38 +1,30 @@
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Award, Users, Building2, Heart } from 'lucide-react';
-
-const stats = [
-  { icon: Building2, value: '25+', label: 'Years of Excellence' },
-  { icon: Users, value: '50K+', label: 'Happy Guests' },
-  { icon: Award, value: '15', label: 'Awards Won' },
-  { icon: Heart, value: '100%', label: 'Guest Satisfaction' },
-];
 
 const team = [
   {
-    name: 'Alexander Mitchell',
+    name: 'Marcus Whitfield',
     role: 'General Manager',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-    bio: 'With over 20 years in luxury hospitality, Alexander leads SUG Hotel with passion and vision.',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400',
+    bio: 'With over 20 years in luxury hospitality, Marcus leads SUG Hotel with passion and an unwavering commitment to excellence.',
   },
   {
-    name: 'Sophia Chen',
+    name: 'Elena Vasquez',
     role: 'Executive Chef',
-    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400',
-    bio: 'Michelin-starred chef Sophia brings world-class culinary artistry to every dish.',
+    image: 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?w=400',
+    bio: 'Elena brings two Michelin stars worth of culinary artistry to every plate, blending local flavors with global techniques.',
   },
   {
-    name: 'James Okonkwo',
+    name: 'David Okafor',
     role: 'Head of Guest Experience',
-    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-    bio: 'James ensures every guest receives personalized, unforgettable service from arrival to departure.',
+    image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400',
+    bio: 'David ensures every guest receives personalized, white-glove service from the moment they arrive until departure.',
   },
   {
-    name: 'Isabella Rossi',
-    role: 'Spa Director',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-    bio: 'Isabella curates holistic wellness experiences that rejuvenate body, mind, and soul.',
+    name: 'Amara Diallo',
+    role: 'Spa & Wellness Director',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400',
+    bio: 'Amara curates holistic wellness experiences that rejuvenate the body, calm the mind, and restore the spirit.',
   },
 ];
 
@@ -64,7 +56,7 @@ export default function About() {
     <div className="min-h-screen bg-cream">
       <Navbar />
 
-      {/* Hero */}
+      {/* ─── Hero ─── */}
       <div className="relative h-[500px] overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=1920"
@@ -74,7 +66,7 @@ export default function About() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center text-white max-w-3xl px-4">
-            <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3">Our Story</p>
+            <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3 font-medium">Our Story</p>
             <h1 className="font-serif text-4xl sm:text-5xl mb-6">A Legacy of Luxury</h1>
             <p className="text-white/80 leading-relaxed">
               Since 1999, SUG Hotel has been a beacon of refined hospitality, where timeless elegance
@@ -85,28 +77,10 @@ export default function About() {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="bg-charcoal py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((stat) => {
-              const Icon = stat.icon;
-              return (
-                <div key={stat.label} className="text-center">
-                  <Icon size={28} className="text-gold mx-auto mb-3" />
-                  <p className="font-serif text-3xl text-white mb-1">{stat.value}</p>
-                  <p className="text-sm text-gray-400">{stat.label}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Our Story */}
+      {/* ─── Our Story ─── */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
-          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3">Who We Are</p>
+          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3 font-medium">Who We Are</p>
           <h2 className="font-serif text-3xl text-charcoal">Our Philosophy</h2>
         </div>
         <div className="prose prose-lg mx-auto text-gray-500 leading-relaxed text-center">
@@ -128,11 +102,11 @@ export default function About() {
         </div>
       </div>
 
-      {/* Values */}
+      {/* ─── Values ─── */}
       <div className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3">What Drives Us</p>
+            <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3 font-medium">What Drives Us</p>
             <h2 className="font-serif text-3xl text-charcoal">Our Core Values</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -149,23 +123,23 @@ export default function About() {
         </div>
       </div>
 
-      {/* Team */}
+      {/* ─── Team ─── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center mb-12">
-          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3">The People</p>
+          <p className="text-gold text-xs tracking-[0.3em] uppercase mb-3 font-medium">The People</p>
           <h2 className="font-serif text-3xl text-charcoal">Meet Our Team</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {team.map((member) => (
             <div
               key={member.name}
-              className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow duration-300 group"
             >
-              <div className="h-64 overflow-hidden">
+              <div className="h-72 overflow-hidden">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
               <div className="p-6">
@@ -177,8 +151,6 @@ export default function About() {
           ))}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import toast from 'react-hot-toast';
 
@@ -19,7 +19,6 @@ export default function Login() {
     if (result.success) {
       toast.success('Welcome back!');
 
-      // Redirect admins to dashboard, everyone else to intended page or home
       if (result.user?.role === 'ADMIN' || result.user?.role === 'SUPER_ADMIN') {
         navigate('/admin', { replace: true });
       } else {
@@ -98,7 +97,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gold hover:bg-gold-light disabled:bg-gray-300 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+              className="w-full bg-gold hover:bg-gold-light disabled:bg-gray-300 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -106,7 +105,10 @@ export default function Login() {
                   <span>Signing in...</span>
                 </>
               ) : (
-                <span>Sign In</span>
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight size={16} />
+                </>
               )}
             </button>
           </form>

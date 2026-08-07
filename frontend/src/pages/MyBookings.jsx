@@ -14,7 +14,6 @@ import {
 import { useBookingStore } from '../store/bookingStore';
 import { useAuthStore } from '../store/authStore';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import toast from 'react-hot-toast';
 
 const statusConfig = {
@@ -247,8 +246,6 @@ export default function MyBookings() {
           </div>
         )}
       </div>
-
-      <Footer />
     </div>
   );
 }
