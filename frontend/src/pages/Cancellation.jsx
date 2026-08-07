@@ -55,7 +55,7 @@ const faqs = [
   },
 ];
 
-export default function CancellationPolicy() {
+export default function Cancellation() {
   return (
     <div className="min-h-screen bg-cream">
       <Navbar />
