@@ -14,6 +14,10 @@ import {
   Calendar,
   Star,
   Loader2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
 } from 'lucide-react';
 import { useRoomStore } from '../store/roomStore';
 import { useAuthStore } from '../store/authStore';
@@ -44,6 +48,8 @@ export default function RoomDetail() {
   const { createBooking, initPayment } = useBookingStore();
 
   const [selectedImage, setSelectedImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [isBooking, setIsBooking] = useState(false);
 
   const checkIn = urlParams.get('checkIn') || '';
@@ -105,6 +111,33 @@ export default function RoomDetail() {
     }
   };
 
+  const openLightbox = (index) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const nextLightboxImage = () => {
+    if (!currentRoom) return;
+    setLightboxIndex((prev) => (prev + 1) % currentRoom.images.length);
+  };
+
+  const prevLightboxImage = () => {
+    if (!currentRoom) return;
+    setLightboxIndex((prev) => (prev - 1 + currentRoom.images.length) % currentRoom.images.length);
+  };
+
+  // Keyboard navigation for lightbox
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!lightboxOpen) return;
+      if (e.key === 'Escape') setLightboxOpen(false);
+      if (e.key === 'ArrowRight') nextLightboxImage();
+      if (e.key === 'ArrowLeft') prevLightboxImage();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxOpen, currentRoom]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -120,6 +153,8 @@ export default function RoomDetail() {
       </div>
     );
   }
+
+  const images = currentRoom.images?.length > 0 ? currentRoom.images : ['https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800'];
 
   return (
     <div className="min-h-screen bg-cream">
@@ -142,25 +177,60 @@ export default function RoomDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* ─── Left Column: Images & Details ─── */}
           <div className="lg:col-span-2">
-            {/* Main Image */}
-            <div className="relative h-[400px] sm:h-[500px] rounded-xl overflow-hidden mb-4">
+            {/* Main Image Gallery */}
+            <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] rounded-xl overflow-hidden mb-4 group">
               <img
-                src={currentRoom.images[selectedImage] || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800'}
+                src={images[selectedImage]}
                 alt={currentRoom.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={() => openLightbox(selectedImage)}
               />
+              
+              {/* Zoom hint */}
+              <div className="absolute top-4 right-4 bg-black/40 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                <ZoomIn size={14} />
+                <span>Click to expand</span>
+              </div>
+
+              {/* Image counter */}
+              {images.length > 1 && (
+                <div className="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1.5 rounded-lg text-xs">
+                  {selectedImage + 1} / {images.length}
+                </div>
+              )}
+
+              {/* Navigation arrows (visible on hover, desktop only) */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImage((prev) => (prev - 1 + images.length) % images.length)}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex"
+                  >
+                    <ChevronLeft size={20} className="text-charcoal" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImage((prev) => (prev + 1) % images.length)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hidden sm:flex"
+                  >
+                    <ChevronRight size={20} className="text-charcoal" />
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Thumbnails */}
-            {currentRoom.images.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
-                {currentRoom.images.map((img, idx) => (
+            {images.length > 1 && (
+              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
+                {images.map((img, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedImage(idx)}
                     className={`
-                      flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all duration-200
-                      ${selectedImage === idx ? 'border-gold ring-2 ring-gold/20' : 'border-transparent hover:border-gray-200'}
+                      flex-shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-200
+                      ${selectedImage === idx 
+                        ? 'border-gold ring-2 ring-gold/20 w-20 h-20 sm:w-24 sm:h-24' 
+                        : 'border-transparent hover:border-gray-300 w-16 h-16 sm:w-20 sm:h-20 opacity-70 hover:opacity-100'
+                      }
                     `}
                   >
                     <img src={img} alt="" className="w-full h-full object-cover" />
@@ -171,9 +241,9 @@ export default function RoomDetail() {
 
             {/* Room Info */}
             <div className="mt-10">
-              <div className="flex items-center justify-between mb-4">
-                <h1 className="font-serif text-3xl text-charcoal">{currentRoom.name}</h1>
-                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-3 py-1.5 rounded-md uppercase tracking-wide">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                <h1 className="font-serif text-2xl sm:text-3xl text-charcoal">{currentRoom.name}</h1>
+                <span className="text-[10px] font-medium text-gray-400 bg-gray-100 px-3 py-1.5 rounded-md uppercase tracking-wide self-start">
                   {currentRoom.type}
                 </span>
               </div>
@@ -181,7 +251,7 @@ export default function RoomDetail() {
               <p className="text-gray-500 leading-relaxed mb-8">{currentRoom.description}</p>
 
               {/* Room Details Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10">
                 {[
                   { icon: Users, label: 'Capacity', value: `${currentRoom.capacity} Guests` },
                   { icon: Bed, label: 'Bed', value: currentRoom.bedType },
@@ -303,6 +373,74 @@ export default function RoomDetail() {
           </div>
         </div>
       </div>
+
+      {/* ─── Lightbox ─── */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
+          onClick={() => setLightboxOpen(false)}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white/50 hover:text-white transition-colors z-10 p-2 rounded-full hover:bg-white/10"
+          >
+            <X size={28} />
+          </button>
+
+          {/* Image counter */}
+          <div className="absolute top-4 left-4 sm:top-6 sm:left-6 text-white/50 text-sm">
+            {lightboxIndex + 1} / {images.length}
+          </div>
+
+          {/* Prev/Next buttons */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prevLightboxImage(); }}
+                className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft size={24} className="text-white" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); nextLightboxImage(); }}
+                className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-colors"
+              >
+                <ChevronRight size={24} className="text-white" />
+              </button>
+            </>
+          )}
+
+          {/* Main image */}
+          <div
+            className="max-w-5xl max-h-[85vh] px-12 sm:px-20"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={images[lightboxIndex]}
+              alt={`${currentRoom.name} - ${lightboxIndex + 1}`}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+            />
+          </div>
+
+          {/* Thumbnail strip at bottom */}
+          {images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2">
+              {images.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={(e) => { e.stopPropagation(); setLightboxIndex(idx); }}
+                  className={`flex-shrink-0 w-12 h-12 sm:w-16 sm:h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                    lightboxIndex === idx ? 'border-gold' : 'border-transparent opacity-50 hover:opacity-100'
+                  }`}
+                >
+                  <img src={img} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

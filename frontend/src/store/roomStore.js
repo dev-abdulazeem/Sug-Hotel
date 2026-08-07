@@ -38,4 +38,27 @@ export const useRoomStore = create((set, get) => ({
       console.error('Failed to fetch hero images:', error);
     }
   },
+
+  // NEW: Remove a specific image from a room
+  removeRoomImage: async (roomId, imageUrl) => {
+    try {
+      await api.delete(`/rooms/${roomId}/images`, { data: { imageUrl } });
+      // Refresh current room if viewing it
+      const { currentRoom } = get();
+      if (currentRoom?.id === roomId) {
+        set({
+          currentRoom: {
+            ...currentRoom,
+            images: currentRoom.images.filter((img) => img !== imageUrl),
+          },
+        });
+      }
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Failed to remove image',
+      };
+    }
+  },
 }));

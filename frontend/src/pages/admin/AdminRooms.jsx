@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   Plus,
   Pencil,
@@ -9,6 +8,7 @@ import {
   Loader2,
   Star,
   Search,
+  Image as ImageIcon,
 } from 'lucide-react';
 import api from '../../utils/api';
 import toast from 'react-hot-toast';
@@ -38,6 +38,7 @@ export default function AdminRooms() {
   });
 
   const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
     fetchRooms();
@@ -68,6 +69,7 @@ export default function AdminRooms() {
       images: [],
     });
     setImageFiles([]);
+    setImagePreviews([]);
     setEditingRoom(null);
   };
 
@@ -88,10 +90,47 @@ export default function AdminRooms() {
       bedType: room.bedType,
       amenities: room.amenities,
       featured: room.featured,
-      images: room.images,
+      images: room.images || [],
     });
     setImageFiles([]);
+    setImagePreviews([]);
     setShowModal(true);
+  };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImageFiles((prev) => [...prev, ...files]);
+
+    // Generate previews
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews((prev) => [...prev, reader.result]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const removeNewImage = (index) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = async (imageUrl) => {
+    if (!editingRoom) return;
+    if (!window.confirm('Remove this image?')) return;
+
+    try {
+      await api.delete(`/rooms/${editingRoom.id}/images`, { data: { imageUrl } });
+      setFormData((prev) => ({
+        ...prev,
+        images: prev.images.filter((img) => img !== imageUrl),
+      }));
+      toast.success('Image removed');
+      fetchRooms();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to remove image');
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -109,6 +148,7 @@ export default function AdminRooms() {
     if (formData.size) data.append('size', formData.size);
     data.append('amenities', formData.amenities.join(','));
 
+    // Append new images
     imageFiles.forEach((file) => {
       data.append('images', file);
     });
@@ -206,13 +246,19 @@ export default function AdminRooms() {
           >
             <div className="relative h-48">
               <img
-                src={room.images[0] || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400'}
+                src={room.images?.[0] || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400'}
                 alt={room.name}
                 className="w-full h-full object-cover"
               />
               {room.featured && (
                 <div className="absolute top-3 left-3">
                   <Star size={14} className="text-gold fill-gold" />
+                </div>
+              )}
+              {room.images?.length > 1 && (
+                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                  <ImageIcon size={12} />
+                  <span>{room.images.length}</span>
                 </div>
               )}
               <div className="absolute top-3 right-3 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -375,9 +421,36 @@ export default function AdminRooms() {
                 <label htmlFor="featured" className="text-sm text-gray-600">Featured room (shown on homepage)</label>
               </div>
 
-              {/* Images */}
+              {/* ─── Images Section ─── */}
               <div>
                 <label className="block text-xs text-gray-500 mb-2">Room Images</label>
+
+                {/* Existing Images (Edit Mode) */}
+                {editingRoom && formData.images.length > 0 && (
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-400 mb-2">Current Images</p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      {formData.images.map((img, idx) => (
+                        <div key={idx} className="relative group aspect-square">
+                          <img
+                            src={img}
+                            alt={`Room ${idx + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(img)}
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Area */}
                 <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-gold/50 transition-colors">
                   <Upload size={24} className="text-gray-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-500 mb-2">Drag & drop images or click to browse</p>
@@ -385,7 +458,7 @@ export default function AdminRooms() {
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={(e) => setImageFiles(Array.from(e.target.files))}
+                    onChange={handleImageChange}
                     className="hidden"
                     id="room-images"
                   />
@@ -395,15 +468,30 @@ export default function AdminRooms() {
                   >
                     Choose Files
                   </label>
-                  {imageFiles.length > 0 && (
-                    <p className="text-xs text-gold mt-2">{imageFiles.length} file(s) selected</p>
-                  )}
                 </div>
-                {editingRoom && formData.images.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {formData.images.map((img, idx) => (
-                      <img key={idx} src={img} alt="" className="w-16 h-16 object-cover rounded-lg" />
-                    ))}
+
+                {/* New Image Previews */}
+                {imagePreviews.length > 0 && (
+                  <div className="mt-4">
+                    <p className="text-xs text-gray-400 mb-2">New Images ({imagePreviews.length})</p>
+                    <div className="grid grid-cols-4 sm:grid-cols-6 gap-2">
+                      {imagePreviews.map((preview, idx) => (
+                        <div key={idx} className="relative group aspect-square">
+                          <img
+                            src={preview}
+                            alt={`New ${idx + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeNewImage(idx)}
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                          >
+                            <X size={10} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

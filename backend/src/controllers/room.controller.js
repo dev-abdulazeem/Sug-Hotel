@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const asyncHandler = require('../utils/asyncHandler');
+const cloudinary = require('../config/cloudinary');
 
 const prisma = new PrismaClient();
 
@@ -11,7 +12,6 @@ const getAllRooms = asyncHandler(async (req, res) => {
     orderBy: { pricePerNight: 'asc' },
   });
 
-  // If dates provided, check availability
   if (checkIn && checkOut) {
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
@@ -166,7 +166,6 @@ const updateRoom = asyncHandler(async (req, res) => {
 const deleteRoom = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  // Check for active bookings
   const activeBookings = await prisma.booking.findFirst({
     where: {
       roomId: id,
@@ -184,6 +183,45 @@ const deleteRoom = asyncHandler(async (req, res) => {
   res.json({ message: 'Room deleted successfully.' });
 });
 
+// Delete a single image from a room (Admin)
+const deleteRoomImage = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { imageUrl } = req.body;
+
+  if (!imageUrl) {
+    return res.status(400).json({ message: 'imageUrl is required' });
+  }
+
+  const room = await prisma.room.findUnique({ where: { id } });
+  if (!room) {
+    return res.status(404).json({ message: 'Room not found' });
+  }
+
+  if (!room.images.includes(imageUrl)) {
+    return res.status(400).json({ message: 'Image not found on this room' });
+  }
+
+  const updatedImages = room.images.filter((img) => img !== imageUrl);
+
+  await prisma.room.update({
+    where: { id },
+    data: { images: updatedImages },
+  });
+
+  // Try to delete from Cloudinary
+  try {
+    const urlParts = imageUrl.split('/');
+    const filenameWithExt = urlParts[urlParts.length - 1];
+    const publicId = filenameWithExt.split('.')[0];
+    const folder = urlParts[urlParts.length - 2] || 'rooms';
+    await cloudinary.uploader.destroy(`${folder}/${publicId}`);
+  } catch (err) {
+    console.log('Cloudinary delete skipped:', err.message);
+  }
+
+  res.json({ message: 'Image removed successfully', images: updatedImages });
+});
+
 module.exports = {
   getAllRooms,
   getRoomById,
@@ -191,4 +229,5 @@ module.exports = {
   createRoom,
   updateRoom,
   deleteRoom,
+  deleteRoomImage,
 };
