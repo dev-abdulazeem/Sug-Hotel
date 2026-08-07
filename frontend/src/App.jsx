@@ -19,7 +19,7 @@ import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import PaymentVerify from './pages/PaymentVerify';
-import Cancellation from './pages/cancellation';
+import Cancellation from './pages/Cancellation.jsx';
 
 // Admin Pages
 import AdminLayout from './pages/admin/AdminLayout';
